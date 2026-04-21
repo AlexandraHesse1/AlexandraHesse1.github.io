@@ -1,155 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Vote Installation</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BIX Vote</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0f0f0f;
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+body{
+  margin:0;
+  background:#111;
+  color:#fff;
+  font-family:Arial,sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
 }
-
-.card {
-  width: min(92vw, 520px);
-  background: #1b1b1b;
-  padding: 32px;
-  border-radius: 20px;
-  text-align: center;
+.card{
+  background:#1e1e1e;
+  padding:30px;
+  border-radius:20px;
+  width:min(92vw,520px);
+  text-align:center;
 }
-
-h1 {
-  font-size: 2rem;
-  margin-bottom: 8px;
+.buttons{
+  display:flex;
+  gap:16px;
+  justify-content:center;
+  margin-top:24px;
 }
-
-p {
-  color: #aaa;
+button{
+  border:none;
+  padding:18px 34px;
+  border-radius:14px;
+  font-size:1.2rem;
+  font-weight:bold;
+  cursor:pointer;
 }
-
-.buttons {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  margin-top: 25px;
-}
-
-button {
-  border: none;
-  padding: 18px 34px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  border-radius: 14px;
-  cursor: pointer;
-}
-
-#yesBtn {
-  background: #00c853;
-  color: white;
-}
-
-#noBtn {
-  background: #d50000;
-  color: white;
-}
-
-#result {
-  margin-top: 26px;
-  font-size: 1.4rem;
-  letter-spacing: 1px;
-}
-
-#status {
-  margin-top: 10px;
-  color: #777;
-  font-size: 0.9rem;
-}
+#yesBtn{background:#00c853;color:#fff;}
+#noBtn{background:#d50000;color:#fff;}
+#result{margin-top:24px;font-size:1.3rem;}
+#status{margin-top:10px;color:#999;}
 </style>
 </head>
 
 <body>
 
 <div class="card">
-  <h1>Vote</h1>
-  <p>Should this happen?</p>
+<h1>Vote</h1>
+<p>Should this happen?</p>
 
-  <div class="buttons">
-    <button id="yesBtn">YES</button>
-    <button id="noBtn">NO</button>
-  </div>
+<div class="buttons">
+<button id="yesBtn">YES</button>
+<button id="noBtn">NO</button>
+</div>
 
-  <div id="result">Loading...</div>
-  <div id="status"></div>
+<div id="result">Loading...</div>
+<div id="status"></div>
 </div>
 
 <script>
-const SUPABASE_URL = "https://hlkfvhzdpxhmkansymxx.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4bXJxaWJqZ3NkbXV3am9lb2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3ODQ3NTMsImV4cCI6MjA5MjM2MDc1M30.jYknpEAU7bx71svQmFvipVm5DGWE8SwvLtfzv66Fa2U";
+const SUPABASE_URL = "https://exmrqibjgsdmuwjoeodz.supabase.co";
 
-// IMPORTANT FIX: correct client init
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_ANON_KEY =
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4bXJxaWJqZ3NkbXV3am9lb2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3ODQ3NTMsImV4cCI6MjA5MjM2MDc1M30.jYknpEAU7bx71svQmFvipVm5DGWE8SwvLtfzv66Fa2U";
+
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
 
 const yesBtn = document.getElementById("yesBtn");
 const noBtn = document.getElementById("noBtn");
-const resultEl = document.getElementById("result");
-const statusEl = document.getElementById("status");
+const result = document.getElementById("result");
+const status = document.getElementById("status");
 
-async function loadVotes() {
-  const { data, error } = await db
+function render(data){
+  result.textContent =
+    `YES: ${data.yes_count} | NO: ${data.no_count}`;
+}
+
+async function loadVotes(){
+  const {data,error} = await db
     .from("votes")
-    .select("yes_count, no_count")
-    .eq("id", 1)
+    .select("yes_count,no_count")
+    .eq("id",1)
     .single();
 
-  if (error) {
+  if(error){
     console.error(error);
-    resultEl.textContent = "Error loading votes";
+    result.textContent = error.message;
     return;
   }
 
-  updateUI(data);
+  render(data);
 }
 
-function updateUI(data) {
-  resultEl.textContent = `YES: ${data.yes_count} | NO: ${data.no_count}`;
-}
-
-async function vote(choice) {
+async function vote(choice){
   yesBtn.disabled = true;
   noBtn.disabled = true;
-  statusEl.textContent = "Submitting vote...";
+  status.textContent = "Saving vote...";
 
-  const { data, error } = await db.rpc("increment_vote", { choice });
+  const {data,error} =
+    await db.rpc("increment_vote",{choice});
 
   yesBtn.disabled = false;
   noBtn.disabled = false;
 
-  if (error) {
+  if(error){
     console.error(error);
-    statusEl.textContent = "Error: " + error.message;
+    status.textContent = error.message;
     return;
   }
 
-  updateUI(data);
-  statusEl.textContent = "Vote recorded ✔";
+  render(data);
+  status.textContent = "Vote saved ✔";
 }
 
 yesBtn.onclick = () => vote("yes");
 noBtn.onclick = () => vote("no");
 
-// initial load
 loadVotes();
 </script>
 
 </body>
 </html>
+
 
