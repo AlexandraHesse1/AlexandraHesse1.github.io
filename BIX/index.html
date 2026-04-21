@@ -3,73 +3,75 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Vote</title>
+<title>Vote Installation</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 body {
-  margin:0;
+  margin: 0;
   font-family: Arial, sans-serif;
-  background:#111;
-  color:white;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
+  background: #0f0f0f;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
 
-.card{
-  width:min(92vw,500px);
-  background:#1e1e1e;
-  padding:30px;
-  border-radius:20px;
-  text-align:center;
+.card {
+  width: min(92vw, 520px);
+  background: #1b1b1b;
+  padding: 32px;
+  border-radius: 20px;
+  text-align: center;
 }
 
-h1{
-  font-size:2rem;
-  margin-bottom:10px;
+h1 {
+  font-size: 2rem;
+  margin-bottom: 8px;
 }
 
-p{
-  color:#aaa;
+p {
+  color: #aaa;
 }
 
-.buttons{
-  display:flex;
-  gap:15px;
-  justify-content:center;
-  margin-top:25px;
+.buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 25px;
 }
 
-button{
-  border:none;
-  padding:18px 30px;
-  font-size:1.2rem;
-  font-weight:bold;
-  border-radius:14px;
-  cursor:pointer;
+button {
+  border: none;
+  padding: 18px 34px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 14px;
+  cursor: pointer;
 }
 
-#yesBtn{
-  background:#00c853;
-  color:white;
+#yesBtn {
+  background: #00c853;
+  color: white;
 }
 
-#noBtn{
-  background:#d50000;
-  color:white;
+#noBtn {
+  background: #d50000;
+  color: white;
 }
 
-#result{
-  margin-top:25px;
-  font-size:1.3rem;
+#result {
+  margin-top: 26px;
+  font-size: 1.4rem;
+  letter-spacing: 1px;
 }
 
-#status{
-  margin-top:10px;
-  color:#888;
+#status {
+  margin-top: 10px;
+  color: #777;
+  font-size: 0.9rem;
 }
 </style>
 </head>
@@ -77,7 +79,7 @@ button{
 <body>
 
 <div class="card">
-  <h1>Vote Now</h1>
+  <h1>Vote</h1>
   <p>Should this happen?</p>
 
   <div class="buttons">
@@ -91,9 +93,10 @@ button{
 
 <script>
 const SUPABASE_URL = "https://hlkfvhzdpxhmkansymxx.supabase.co";
-const SUPABASE_ANON_KEY = "YOUR_KEY_HERE";
+const SUPABASE_ANON_KEY = "YOUR_ANON_KEY_HERE";
 
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// IMPORTANT FIX: correct client init
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const yesBtn = document.getElementById("yesBtn");
 const noBtn = document.getElementById("noBtn");
@@ -103,40 +106,47 @@ const statusEl = document.getElementById("status");
 async function loadVotes() {
   const { data, error } = await db
     .from("votes")
-    .select("Yes, No")
+    .select("yes_count, no_count")
     .eq("id", 1)
     .single();
 
-  if(error){
+  if (error) {
+    console.error(error);
     resultEl.textContent = "Error loading votes";
     return;
   }
 
-  resultEl.textContent = `YES: ${data.Yes} | NO: ${data.No}`;
+  updateUI(data);
 }
 
-async function vote(choice){
+function updateUI(data) {
+  resultEl.textContent = `YES: ${data.yes_count} | NO: ${data.no_count}`;
+}
+
+async function vote(choice) {
   yesBtn.disabled = true;
   noBtn.disabled = true;
-  statusEl.textContent = "Saving vote...";
+  statusEl.textContent = "Submitting vote...";
 
   const { data, error } = await db.rpc("increment_vote", { choice });
 
   yesBtn.disabled = false;
   noBtn.disabled = false;
 
-  if(error){
-    statusEl.textContent = error.message;
+  if (error) {
+    console.error(error);
+    statusEl.textContent = "Error: " + error.message;
     return;
   }
 
-  resultEl.textContent = `YES: ${data.Yes} | NO: ${data.No}`;
-  statusEl.textContent = "Vote saved!";
+  updateUI(data);
+  statusEl.textContent = "Vote recorded ✔";
 }
 
-yesBtn.onclick = () => vote("Yes");
-noBtn.onclick = () => vote("No");
+yesBtn.onclick = () => vote("yes");
+noBtn.onclick = () => vote("no");
 
+// initial load
 loadVotes();
 </script>
 
