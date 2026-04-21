@@ -1,160 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ice Cream Vote</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Vote</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: Arial, sans-serif;
-      background: #f8f3ea;
-      color: #2b2b2b;
-    }
+<style>
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:#111;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+}
 
-    .card {
-      width: min(92vw, 520px);
-      background: #ffffff;
-      border-radius: 24px;
-      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.10);
-      padding: 32px 24px;
-      text-align: center;
-    }
+.card{
+  width:min(92vw,500px);
+  background:#1e1e1e;
+  padding:30px;
+  border-radius:20px;
+  text-align:center;
+}
 
-    h1 {
-      margin: 0 0 8px 0;
-      font-size: 2rem;
-    }
+h1{
+  font-size:2rem;
+  margin-bottom:10px;
+}
 
-    .sub {
-      margin: 0 0 24px 0;
-      color: #666;
-    }
+p{
+  color:#aaa;
+}
 
-    .buttons {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
+.buttons{
+  display:flex;
+  gap:15px;
+  justify-content:center;
+  margin-top:25px;
+}
 
-    button {
-      border: none;
-      border-radius: 18px;
-      padding: 18px 28px;
-      min-width: 180px;
-      font-size: 1.15rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: transform 0.12s ease, opacity 0.12s ease;
-    }
+button{
+  border:none;
+  padding:18px 30px;
+  font-size:1.2rem;
+  font-weight:bold;
+  border-radius:14px;
+  cursor:pointer;
+}
 
-    button:hover {
-      transform: translateY(-1px) scale(1.02);
-    }
+#yesBtn{
+  background:#00c853;
+  color:white;
+}
 
-    button:disabled {
-      opacity: 0.65;
-      cursor: wait;
-    }
+#noBtn{
+  background:#d50000;
+  color:white;
+}
 
-    #vanillaBtn {
-      background: #f3e5ab;
-      color: #5b4a00;
-    }
+#result{
+  margin-top:25px;
+  font-size:1.3rem;
+}
 
-    #chocolateBtn {
-      background: #5a3825;
-      color: #ffffff;
-    }
-
-    #result {
-      margin-top: 24px;
-      font-size: 1.35rem;
-      font-weight: bold;
-    }
-
-    #status {
-      margin-top: 10px;
-      min-height: 22px;
-      color: #777;
-    }
-  </style>
+#status{
+  margin-top:10px;
+  color:#888;
+}
+</style>
 </head>
+
 <body>
-  <div class="card">
-    <h1>Ice Cream Vote</h1>
-    <p class="sub">Choose your favorite flavor</p>
 
-    <div class="buttons">
-      <button id="vanillaBtn">Vanilla</button>
-      <button id="chocolateBtn">Chocolate</button>
-    </div>
+<div class="card">
+  <h1>Vote Now</h1>
+  <p>Should this happen?</p>
 
-    <div id="result">Loading...</div>
-    <div id="status"></div>
+  <div class="buttons">
+    <button id="yesBtn">YES</button>
+    <button id="noBtn">NO</button>
   </div>
 
-  <script>
-    const SUPABASE_URL = "https://hlkfvhzdpxhmkansymxx.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4bXJxaWJqZ3NkbXV3am9lb2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3ODQ3NTMsImV4cCI6MjA5MjM2MDc1M30.jYknpEAU7bx71svQmFvipVm5DGWE8SwvLtfzv66Fa2U";
+  <div id="result">Loading...</div>
+  <div id="status"></div>
+</div>
 
-    const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+<script>
+const SUPABASE_URL = "https://hlkfvhzdpxhmkansymxx.supabase.co";
+const SUPABASE_ANON_KEY = "YOUR_KEY_HERE";
 
-    const vanillaBtn = document.getElementById("vanillaBtn");
-    const chocolateBtn = document.getElementById("chocolateBtn");
-    const resultEl = document.getElementById("result");
-    const statusEl = document.getElementById("status");
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    async function loadVotes() {
-      statusEl.textContent = "";
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+const resultEl = document.getElementById("result");
+const statusEl = document.getElementById("status");
 
-      const { data, error } = await db
-        .from("votes")
-        .select("vanilla, chocolate")
-        .eq("id", 1)
-        .single();
+async function loadVotes() {
+  const { data, error } = await db
+    .from("votes")
+    .select("Yes, No")
+    .eq("id", 1)
+    .single();
 
-      if (error) {
-        resultEl.textContent = "Load error";
-        statusEl.textContent = error.message;
-        return;
-      }
+  if(error){
+    resultEl.textContent = "Error loading votes";
+    return;
+  }
 
-      resultEl.textContent = `Vanilla: ${data.vanilla} | Chocolate: ${data.chocolate}`;
-    }
+  resultEl.textContent = `YES: ${data.Yes} | NO: ${data.No}`;
+}
 
-    async function vote(choice) {
-      vanillaBtn.disabled = true;
-      chocolateBtn.disabled = true;
-      statusEl.textContent = "Saving vote...";
+async function vote(choice){
+  yesBtn.disabled = true;
+  noBtn.disabled = true;
+  statusEl.textContent = "Saving vote...";
 
-      const { data, error } = await db.rpc("increment_vote", { choice });
+  const { data, error } = await db.rpc("increment_vote", { choice });
 
-      vanillaBtn.disabled = false;
-      chocolateBtn.disabled = false;
+  yesBtn.disabled = false;
+  noBtn.disabled = false;
 
-      if (error) {
-        statusEl.textContent = error.message;
-        return;
-      }
+  if(error){
+    statusEl.textContent = error.message;
+    return;
+  }
 
-      resultEl.textContent = `Vanilla: ${data.vanilla} | Chocolate: ${data.chocolate}`;
-      statusEl.textContent = "Vote saved!";
-    }
+  resultEl.textContent = `YES: ${data.Yes} | NO: ${data.No}`;
+  statusEl.textContent = "Vote saved!";
+}
 
-    vanillaBtn.addEventListener("click", () => vote("vanilla"));
-    chocolateBtn.addEventListener("click", () => vote("chocolate"));
+yesBtn.onclick = () => vote("Yes");
+noBtn.onclick = () => vote("No");
 
-    loadVotes();
-  </script>
+loadVotes();
+</script>
+
 </body>
 </html>
+
