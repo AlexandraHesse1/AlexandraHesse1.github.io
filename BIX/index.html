@@ -10,9 +10,9 @@
 <style>
 body{
   margin:0;
+  background:#000;
+  color:#fff;
   font-family: Arial, sans-serif;
-  background:#f4f4f4;
-  color:#222;
   display:flex;
   justify-content:center;
   align-items:center;
@@ -24,19 +24,17 @@ body{
   text-align:center;
 }
 
-.top-text{
-  font-size:0.9rem;
-  margin-bottom:30px;
-}
-
+/* LOADER ICON */
 .loader{
   width:60px;
   height:60px;
-  border:6px solid #ddd;
-  border-top:6px solid #000;
-  border-radius:50%;
-  margin:0 auto 20px;
-  animation:spin 1s linear infinite;
+  margin:0 auto 30px;
+}
+
+.loader svg{
+  width:100%;
+  height:100%;
+  animation:spin 1.2s linear infinite;
 }
 
 @keyframes spin{
@@ -44,8 +42,10 @@ body{
   100%{transform:rotate(360deg);}
 }
 
+/* HEADER TEXT */
 .date{
   font-size:0.9rem;
+  opacity:0.8;
   margin-bottom:5px;
 }
 
@@ -54,17 +54,28 @@ body{
   margin-bottom:30px;
 }
 
+/* WHITE CARD */
+.card{
+  background:#eee;
+  color:#111;
+  padding:30px 20px;
+  margin:20px 0 40px;
+}
+
+/* QUESTION */
 .question{
   font-size:1.4rem;
-  font-weight:600;
+  font-weight:700;
   line-height:1.5;
-  margin-bottom:30px;
+  margin-bottom:25px;
 }
 
+/* SUBTEXT */
 .subtext{
-  margin-bottom:30px;
+  margin-bottom:25px;
 }
 
+/* BUTTONS */
 .buttons{
   display:flex;
   gap:20px;
@@ -74,26 +85,35 @@ body{
 button{
   padding:14px 30px;
   font-size:1.1rem;
-  border-radius:10px;
-  border:2px solid #000;
-  background:transparent;
-  cursor:pointer;
-}
-
-button:hover{
+  border:none;
+  border-radius:6px;
   background:#000;
   color:#fff;
+  cursor:pointer;
+  min-width:120px;
 }
 
+button:disabled{
+  opacity:0.5;
+}
+
+/* FOOTER */
 .footer{
-  margin-top:50px;
+  margin-top:40px;
   font-size:0.9rem;
+  opacity:0.8;
 }
 
 .time{
-  font-size:1.3rem;
+  font-size:1.4rem;
   font-weight:bold;
   margin-top:10px;
+}
+
+/* RESULT */
+#result{
+  margin-top:20px;
+  font-size:1rem;
 }
 </style>
 </head>
@@ -102,29 +122,43 @@ button:hover{
 
 <div class="container">
 
-  <div class="top-text">
-    What do you think?<br>
-    Interactive installation at Kunsthaus Graz
+  <!-- LOADING ICON -->
+  <div class="loader" id="loader">
+    <svg viewBox="0 0 50 50">
+      <circle
+        cx="25"
+        cy="25"
+        r="20"
+        fill="none"
+        stroke="#fff"
+        stroke-width="6"
+        stroke-linecap="round"
+        stroke-dasharray="90 150"
+      />
+    </svg>
   </div>
 
-  <div class="loader" id="loader"></div>
-
+  <!-- HEADER -->
   <div class="date">21.04.2026</div>
-  <div class="title">Todays Question</div>
+  <div class="title">This weeks question</div>
 
-  <div class="question">
-    Is art allowed to do everything, even if no one likes it?
+  <!-- WHITE CARD -->
+  <div class="card">
+    <div class="question">
+      Is art allowed to do everything, even if no one likes it?
+    </div>
+
+    <div class="subtext">Your opinion is asked</div>
+
+    <div class="buttons">
+      <button id="yesBtn">YES</button>
+      <button id="noBtn">NO</button>
+    </div>
+
+    <div id="result"></div>
   </div>
 
-  <div class="subtext">Your opinion is asked</div>
-
-  <div class="buttons">
-    <button id="yesBtn">YES</button>
-    <button id="noBtn">NO</button>
-  </div>
-
-  <div id="result" style="margin-top:25px;"></div>
-
+  <!-- FOOTER -->
   <div class="footer">
     Voting open until
     <div class="time">10pm</div>
