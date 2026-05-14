@@ -97,6 +97,17 @@ button:disabled{
   opacity:0.5;
 }
 
+/* HIDDEN RESET BUTTON */
+.reset-btn{
+  margin-top:20px;
+  background:#000;
+  color:#000;
+  border:none;
+  cursor:pointer;
+  padding:10px 20px;
+  opacity:1;
+}
+
 /* FOOTER */
 .footer{
   margin-top:40px;
@@ -145,7 +156,7 @@ button:disabled{
   <!-- WHITE CARD -->
   <div class="card">
     <div class="question">
-      Is art allowed to do everything, even if no one likes it?
+      Should art be free?
     </div>
 
     <div class="subtext">Your opinion is asked</div>
@@ -162,6 +173,11 @@ button:disabled{
   <div class="footer">
     Voting open until
     <div class="time">10pm</div>
+
+    <!-- HIDDEN RESET BUTTON -->
+    <button id="resetBtn" class="reset-btn">
+      RESET
+    </button>
   </div>
 
 </div>
@@ -170,7 +186,7 @@ button:disabled{
 const SUPABASE_URL = "https://exmrqibjgsdmuwjoeodz.supabase.co";
 
 const SUPABASE_ANON_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4bXJxaWJqZ3NkbXV3am9lb2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3ODQ3NTMsImV4cCI6MjA5MjM2MDc1M30.jYknpEAU7bx71svQmFvipVm5DGWE8SwvLtfzv66Fa2U";
+"YOUR_ANON_KEY_HERE";
 
 const db = window.supabase.createClient(
   SUPABASE_URL,
@@ -179,12 +195,14 @@ const db = window.supabase.createClient(
 
 const yesBtn = document.getElementById("yesBtn");
 const noBtn = document.getElementById("noBtn");
+const resetBtn = document.getElementById("resetBtn");
 const result = document.getElementById("result");
 const loader = document.getElementById("loader");
 
 function render(data){
   result.textContent =
     `YES: ${data.yes_count} | NO: ${data.no_count}`;
+
   loader.style.display = "none";
 }
 
@@ -205,6 +223,7 @@ async function loadVotes(){
 }
 
 async function vote(choice){
+
   yesBtn.disabled = true;
   noBtn.disabled = true;
 
@@ -223,8 +242,30 @@ async function vote(choice){
   render(data);
 }
 
+async function resetVotes(){
+
+  const {data,error} = await db
+    .from("votes")
+    .update({
+      yes_count:0,
+      no_count:0
+    })
+    .eq("id",1)
+    .select()
+    .single();
+
+  if(error){
+    console.error(error);
+    result.textContent = error.message;
+    return;
+  }
+
+  render(data);
+}
+
 yesBtn.onclick = () => vote("yes");
 noBtn.onclick = () => vote("no");
+resetBtn.onclick = resetVotes;
 
 loadVotes();
 </script>
