@@ -12,7 +12,7 @@ body{
   margin:0;
   background:#000;
   color:#fff;
-  font-family: Arial, sans-serif;
+  font-family:Arial,sans-serif;
   display:flex;
   justify-content:center;
   align-items:center;
@@ -24,7 +24,7 @@ body{
   text-align:center;
 }
 
-/* LOADER ICON */
+/* LOADER */
 .loader{
   width:60px;
   height:60px;
@@ -42,10 +42,10 @@ body{
   100%{transform:rotate(360deg);}
 }
 
-/* HEADER TEXT */
+/* HEADER */
 .date{
-  font-size:0.9rem;
-  opacity:0.8;
+  font-size:.9rem;
+  opacity:.8;
   margin-bottom:5px;
 }
 
@@ -54,7 +54,7 @@ body{
   margin-bottom:30px;
 }
 
-/* WHITE CARD */
+/* CARD */
 .card{
   background:#eee;
   color:#111;
@@ -70,7 +70,6 @@ body{
   margin-bottom:25px;
 }
 
-/* SUBTEXT */
 .subtext{
   margin-bottom:25px;
 }
@@ -94,25 +93,24 @@ button{
 }
 
 button:disabled{
-  opacity:0.5;
+  opacity:.5;
 }
 
-/* HIDDEN RESET BUTTON */
+/* INVISIBLE RESET BUTTON */
 .reset-btn{
   margin-top:20px;
   background:#000;
   color:#000;
   border:none;
-  cursor:pointer;
   padding:10px 20px;
-  opacity:1;
+  cursor:pointer;
 }
 
 /* FOOTER */
 .footer{
   margin-top:40px;
-  font-size:0.9rem;
-  opacity:0.8;
+  font-size:.9rem;
+  opacity:.8;
 }
 
 .time{
@@ -133,7 +131,7 @@ button:disabled{
 
 <div class="container">
 
-  <!-- LOADING ICON -->
+  <!-- LOADER -->
   <div class="loader" id="loader">
     <svg viewBox="0 0 50 50">
       <circle
@@ -153,13 +151,16 @@ button:disabled{
   <div class="date">21.04.2026</div>
   <div class="title">This weeks question</div>
 
-  <!-- WHITE CARD -->
+  <!-- CARD -->
   <div class="card">
+
     <div class="question">
       Should art be free?
     </div>
 
-    <div class="subtext">Your opinion is asked</div>
+    <div class="subtext">
+      Your opinion is asked
+    </div>
 
     <div class="buttons">
       <button id="yesBtn">YES</button>
@@ -167,6 +168,7 @@ button:disabled{
     </div>
 
     <div id="result"></div>
+
   </div>
 
   <!-- FOOTER -->
@@ -174,7 +176,7 @@ button:disabled{
     Voting open until
     <div class="time">10pm</div>
 
-    <!-- HIDDEN RESET BUTTON -->
+    <!-- HIDDEN RESET -->
     <button id="resetBtn" class="reset-btn">
       RESET
     </button>
@@ -183,7 +185,8 @@ button:disabled{
 </div>
 
 <script>
-const SUPABASE_URL = "https://exmrqibjgsdmuwjoeodz.supabase.co";
+const SUPABASE_URL =
+"https://exmrqibjgsdmuwjoeodz.supabase.co";
 
 const SUPABASE_ANON_KEY =
 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4bXJxaWJqZ3NkbXV3am9lb2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3ODQ3NTMsImV4cCI6MjA5MjM2MDc1M30.jYknpEAU7bx71svQmFvipVm5DGWE8SwvLtfzv66Fa2U";
@@ -200,6 +203,7 @@ const result = document.getElementById("result");
 const loader = document.getElementById("loader");
 
 function render(data){
+
   result.textContent =
     `YES: ${data.yes_count} | NO: ${data.no_count}`;
 
@@ -207,6 +211,7 @@ function render(data){
 }
 
 async function loadVotes(){
+
   const {data,error} = await db
     .from("votes")
     .select("yes_count,no_count")
