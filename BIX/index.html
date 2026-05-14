@@ -58,7 +58,7 @@ body{
 .card{
   background:#eee;
   color:#111;
-  padding:40px 20px 50px;
+  padding:40px 20px 60px;
   margin:20px 0 40px;
 }
 
@@ -71,7 +71,7 @@ body{
 }
 
 .subtext{
-  margin-bottom:45px;
+  margin-bottom:60px;
 }
 
 /* BUTTONS */
@@ -79,7 +79,7 @@ body{
   display:flex;
   gap:20px;
   justify-content:center;
-  margin-top:10px;
+  margin-top:20px;
 }
 
 button{
@@ -97,7 +97,7 @@ button:disabled{
   opacity:.5;
 }
 
-/* INVISIBLE RESET BUTTON */
+/* HIDDEN RESET BUTTON */
 .reset-btn{
   margin-top:20px;
   background:#000;
@@ -169,7 +169,7 @@ button:disabled{
     Voting open until
     <div class="time">10pm</div>
 
-    <!-- HIDDEN RESET -->
+    <!-- INVISIBLE RESET BUTTON -->
     <button id="resetBtn" class="reset-btn">
       RESET
     </button>
@@ -182,7 +182,7 @@ const SUPABASE_URL =
 "https://exmrqibjgsdmuwjoeodz.supabase.co";
 
 const SUPABASE_ANON_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4bXJxaWJqZ3NkbXV3am9lb2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3ODQ3NTMsImV4cCI6MjA5MjM2MDc1M30.jYknpEAU7bx71svQmFvipVm5DGWE8SwvLtfzv66Fa2U";
 
 const db = window.supabase.createClient(
   SUPABASE_URL,
@@ -202,16 +202,15 @@ async function loadVotes(){
 
   const {error} = await db
     .from("votes")
-    .select("yes_count,no_count")
+    .select("*")
     .eq("id",1)
     .single();
 
+  hideLoader();
+
   if(error){
     console.error(error);
-    return;
   }
-
-  hideLoader();
 }
 
 async function vote(choice){
@@ -227,7 +226,6 @@ async function vote(choice){
 
   if(error){
     console.error(error);
-    return;
   }
 }
 
@@ -243,7 +241,6 @@ async function resetVotes(){
 
   if(error){
     console.error(error);
-    return;
   }
 }
 
