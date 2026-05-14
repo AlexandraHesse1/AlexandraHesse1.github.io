@@ -58,7 +58,7 @@ body{
 .card{
   background:#eee;
   color:#111;
-  padding:30px 20px;
+  padding:40px 20px 50px;
   margin:20px 0 40px;
 }
 
@@ -67,11 +67,11 @@ body{
   font-size:1.4rem;
   font-weight:700;
   line-height:1.5;
-  margin-bottom:25px;
+  margin-bottom:35px;
 }
 
 .subtext{
-  margin-bottom:25px;
+  margin-bottom:45px;
 }
 
 /* BUTTONS */
@@ -79,6 +79,7 @@ body{
   display:flex;
   gap:20px;
   justify-content:center;
+  margin-top:10px;
 }
 
 button{
@@ -118,12 +119,6 @@ button:disabled{
   font-weight:bold;
   margin-top:10px;
 }
-
-/* RESULT */
-#result{
-  margin-top:20px;
-  font-size:1rem;
-}
 </style>
 </head>
 
@@ -148,7 +143,7 @@ button:disabled{
   </div>
 
   <!-- HEADER -->
-  <div class="date">20.05.2026</div>
+  <div class="date">21.04.2026</div>
   <div class="title">This weeks question</div>
 
   <!-- CARD -->
@@ -166,8 +161,6 @@ button:disabled{
       <button id="yesBtn">YES</button>
       <button id="noBtn">NO</button>
     </div>
-
-    <div id="result"></div>
 
   </div>
 
@@ -189,7 +182,7 @@ const SUPABASE_URL =
 "https://exmrqibjgsdmuwjoeodz.supabase.co";
 
 const SUPABASE_ANON_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4bXJxaWJqZ3NkbXV3am9lb2R6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3ODQ3NTMsImV4cCI6MjA5MjM2MDc1M30.jYknpEAU7bx71svQmFvipVm5DGWE8SwvLtfzv66Fa2U";
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
 
 const db = window.supabase.createClient(
   SUPABASE_URL,
@@ -199,20 +192,15 @@ const db = window.supabase.createClient(
 const yesBtn = document.getElementById("yesBtn");
 const noBtn = document.getElementById("noBtn");
 const resetBtn = document.getElementById("resetBtn");
-const result = document.getElementById("result");
 const loader = document.getElementById("loader");
 
-function render(data){
-
-  result.textContent =
-    `YES: ${data.yes_count} | NO: ${data.no_count}`;
-
+function hideLoader(){
   loader.style.display = "none";
 }
 
 async function loadVotes(){
 
-  const {data,error} = await db
+  const {error} = await db
     .from("votes")
     .select("yes_count,no_count")
     .eq("id",1)
@@ -220,11 +208,10 @@ async function loadVotes(){
 
   if(error){
     console.error(error);
-    result.textContent = error.message;
     return;
   }
 
-  render(data);
+  hideLoader();
 }
 
 async function vote(choice){
@@ -232,7 +219,7 @@ async function vote(choice){
   yesBtn.disabled = true;
   noBtn.disabled = true;
 
-  const {data,error} =
+  const {error} =
     await db.rpc("increment_vote",{choice});
 
   yesBtn.disabled = false;
@@ -240,32 +227,24 @@ async function vote(choice){
 
   if(error){
     console.error(error);
-    result.textContent = error.message;
     return;
   }
-
-  render(data);
 }
 
 async function resetVotes(){
 
-  const {data,error} = await db
+  const {error} = await db
     .from("votes")
     .update({
       yes_count:0,
       no_count:0
     })
-    .eq("id",1)
-    .select()
-    .single();
+    .eq("id",1);
 
   if(error){
     console.error(error);
-    result.textContent = error.message;
     return;
   }
-
-  render(data);
 }
 
 yesBtn.onclick = () => vote("yes");
